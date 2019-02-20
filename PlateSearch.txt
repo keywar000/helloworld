@@ -1,0 +1,123 @@
+*** Settings ***
+Library           SeleniumLibrary
+Library           Selenium2Library
+Library           RequestsLibrary
+Library           requests
+Library           Screenshot
+Resource          keyword.txt
+
+*** Test Cases ***
+plateDataQueryByTimes
+    #plateDataQueryByTimes    车牌查询时间模式接口
+    ${token}    Gettoken    #获取token
+    log    ${token}
+    ${header1}    Create Dictionary    Content-Type=application/x-www-form-urlencoded    charset=UTF-8    authentication=${token}
+    ${url1}    URL
+    ${session}    Create Session    api    ${url1}    ${header1}
+    ${input}    Set Variable    startTimeList=2018-01-01 14:55:38&endTimeList=2018-05-28 14:55:48&plate=苏A7U1M5&plateColor=蓝&pageSize=20&pageNum=1&timeSort=1    #参数赋值
+    ${data}    Post Request    api    /gp/plate/plateDataQueryByTimes    ${input}    #请求接口
+    log    ${data.text}
+    ${response}    Set Variable    ${data.text}
+    ${responsedata}    To Json    ${response}    #返回结果转换为json格式
+    log    ${responsedata}
+    ${status}    Set Variable    ${responsedata['status']}    #取返回结果的status值
+    should be equal as strings    ${status}    True    #断言status是否为true
+    ${result}    Set Variable    ${responsedata['result']}    #取返回结果的result值
+    should contain    ${result}    totalRecords    #断言是否存在totalRecords
+    ${gettotal}    Set Variable    ${result['totalRecords']}
+    log    ${result}    #输出查询结果
+    log    ${gettotal}    #输出查询数据条数
+
+plateDataQueryByAddress
+    #plateDataQueryByAddress    车牌查询（地点模式）接口
+    ${token}    Gettoken    #获取token
+    log    ${token}
+    ${header1}    Create Dictionary    Content-Type=application/x-www-form-urlencoded    charset=UTF-8    authentication=${token}
+    ${url1}    URL
+    ${session}    Create Session    api    ${url1}    ${header1}
+    ${input}    Set Variable    startTimeList=2018-01-01 14:55:38&endTimeList=2018-05-28 14:55:48&plate=苏A7U1M5&plateColor=蓝    #参数赋值
+    ${data}    Post Request    api    /gp/plate/plateDataQueryByAddress    ${input}    #请求接口
+    log    ${data.text}
+    ${response}    Set Variable    ${data.text}
+    ${responsedata}    To Json    ${response}    #返回结果转换为json格式
+    log    ${responsedata}
+    ${status}    Set Variable    ${responsedata['status']}    #取返回结果的status值
+    should be equal as strings    ${status}    True    #断言status是否为true
+    ${result}    Set Variable    ${responsedata['result']}
+    ${line0}    Set Variable    ${result[0]}
+    log    ${line0}
+    ${caplocation}    Set Variable    ${line0['caplocation']}
+    should not be empty    ${caplocation}    #断言采集地点不为空
+    ${getmessage}    Set Variable    ${responsedata['message']}
+    log    ${result}    #输出查询结果
+    log    ${getmessage}    #输出查询message提示
+    #plateDataDetailQueryByAddress    车牌（地点模式）详情接口
+    ${GIDS}    Set Variable    ${line0['gids']}    #取第一行数据gids的值，供接口请求传gid的值
+    log    ${GIDS}
+    log    ${token}
+    ${input2}    Set Variable    startTimeList=2018-01-01 14:55:38&endTimeList=2018-04-28 14:55:48&plate=苏A7U1M5&gid=${GIDS}    #参数赋值
+    ${data2}    Post Request    api    /gp/plate/plateDataDetailQueryByAddress    ${input2}    #请求接口
+    log    ${data2.text}
+    ${response2}    Set Variable    ${data2.text}
+    ${responsedata2}    To Json    ${response2}
+    log    ${responsedata2}
+    ${status2}    Set Variable    ${responsedata2['status']}
+    should be equal as strings    ${status2}    True
+    ${result2}    Set Variable    ${responsedata2['result']}
+    ${line20}    Set Variable    ${result2[0]}
+    log    ${line20}
+    ${captime2}    Set Variable    ${line20['captime']}
+    should not be empty    ${captime2}    #断言采集时间不为空
+    ${getmessage2}    Set Variable    ${responsedata2['message']}
+    log    ${result2}    #输出查询结果
+    log    ${getmessage2}    #输出查询message提示
+
+plateMapByAddress
+    #plateMapByAddress    车牌查询（地点模式）轨迹地图接口
+    ${token}    Gettoken    #获取token
+    log    ${token}
+    ${header1}    Create Dictionary    Content-Type=application/x-www-form-urlencoded    charset=UTF-8    authentication=${token}
+    ${url1}    URL
+    ${session}    Create Session    api    ${url1}    ${header1}
+    ${input}    Set Variable    startTimeList=2018-01-01 14:55:38&endTimeList=2018-05-28 14:55:48&plate=苏A7U1M5    #参数赋值
+    ${data}    Post Request    api    /gp/plate/plateMapByAddress    ${input}    #请求接口
+    log    ${data.text}
+    ${response}    Set Variable    ${data.text}
+    ${responsedata}    To Json    ${response}    #返回结果转换为json格式
+    log    ${responsedata}
+    ${status}    Set Variable    ${responsedata['status']}    #取返回结果的status值
+    should be equal as strings    ${status}    True    #断言status是否为true
+    ${result}    Set Variable    ${responsedata['result']}
+    ${list}    Set Variable    ${result['list']}
+    log    ${list}
+    ${captimes}    Set Variable    ${result['captimes']}
+    should not be empty    ${captimes}    #断言统计采集数不为空
+    ${line0}    Set Variable    ${list[0]}
+    ${caplocation}    Set Variable    ${line0['caplocation']}
+    should not be empty    ${caplocation}    #断言采集地点不为空
+    ${getmessage}    Set Variable    ${responsedata['message']}
+    log    ${result}    #输出查询结果
+    log    ${getmessage}    #输出查询message提示
+    #plateDataDetailQueryByAddress    车牌查询（地点模式）轨迹地图详情接口
+    Comment    log    ${line0}
+    Comment    ${GIDS}    Set Variable    ${line0['gids']}    #取第一行数据gids的值，供接口请求传gid的值
+    Comment    log    ${GIDS}
+    Comment    log    ${token}
+    Comment    ${input2}    Set Variable    startTimeList=2018-01-01 14:55:38&endTimeList=2018-04-28 14:55:48&plate=苏A7U1M5&gid=${GIDS}&timeSort=1
+    Comment    ${data2}    Post Request    api    /gp/plate/plateDataDetailQueryByAddress    ${input2}    #请求接口
+    Comment    log    ${data2.text}
+    Comment    ${response2}    Set Variable    ${data2.text}
+    Comment    ${responsedata2}    To Json    ${response2}
+    Comment    log    ${responsedata2}
+    Comment    ${status2}    Set Variable    ${responsedata2['status']}
+    Comment    should be equal as strings    ${status2}    True    #断言status是否为true
+    Comment    ${result2}    Set Variable    ${responsedata2['result']}
+    Comment    ${line02}    Set Variable    ${result2[0]}
+    Comment    log    ${line02}    \    #断言是否有返回result
+    Comment    ${captime2}    Set Variable    ${line02['captime']}
+    Comment    should not be empty    ${captime2}    #断言采集时间不为空
+    Comment    ${getmessage2}    Set Variable    ${responsedata2['message']}
+    Comment    log    ${result2}    #输出查询结果
+    Comment    log    ${getmessage2}    #输出查询message提示
+
+*** Keywords ***

@@ -1,0 +1,130 @@
+*** Settings ***
+Resource          keyword.txt
+
+*** Test Cases ***
+plateRelevanceMac
+    #plateRelevanceMac    车牌关联MAC查询接口
+    ${token}    Gettoken
+    log    ${token}
+    ${header1}    Create Dictionary    Content-Type=application/x-www-form-urlencoded    charset=UTF-8    authentication=${token}
+    ${url1}    URL
+    ${session}    Create Session    api    ${url1}    ${header1}
+    ${input}    Set Variable    plateColor=蓝&startTimeList=2018-01-01 14:55:38&endTimeList=2018-04-28 14:55:48&plate=苏A7U1M5&range=60&pageSize=20&pageNum=1    #参数赋值
+    ${data}    Post Request    api    /gp/plate/plateRelevanceMac    ${input}    #请求接口
+    log    ${data.text}
+    ${response}    Set Variable    ${data.text}
+    ${responsedata}    To Json    ${response}    #返回结果转换为json格式
+    log    ${responsedata}
+    ${status}    Set Variable    ${responsedata['status']}    #取返回结果的status值
+    should be equal as strings    ${status}    True    #断言status是否为true
+    ${result}    Set Variable    ${responsedata['result']}    #取返回结果的result值
+    log    ${result}
+    should contain    ${result}    totalRecords    #断言是否有totalRecords
+    ${gettotal}    Set Variable    ${result['totalRecords']}
+    log    ${gettotal}    #输出查询数据条数
+    #plateRelevanceMacDetail    车牌关联MAC查询数据详情接口
+    ${mapList}    Set Variable    ${result['mapList']}
+    log    ${mapList}
+    ${line0}    Set Variable    ${mapList[0]}
+    log    ${line0}
+    ${MAC}    Set Variable    ${line0['mac']}    #取第一行数据mac的值，供接口请求传mac的值
+    log    ${MAC}
+    log    ${token}
+    ${input2}    Set Variable    plateColor=蓝&startTimeList=2018-01-01 14:55:38&endTimeList=2018-04-28 14:55:48&plate=苏A7U1M5&targetMac=${MAC}&operateType=0&range=60    #查看MAC详情的参数赋值
+    ${data2}    Post Request    api    /gp/plate/plateRelevanceMacDetail    ${input2}    #请求接口
+    log    ${data2.text}
+    ${response2}    Set Variable    ${data2.text}
+    ${responsedata2}    To Json    ${response2}    #返回结果转换为json格式
+    log    ${responsedata2}
+    ${status2}    Set Variable    ${responsedata2['status']}    #取返回结果的status值
+    should be equal as strings    ${status2}    True    #断言status是否为true
+    ${result2}    Set Variable    ${responsedata2['result']}
+    ${Detailline0}    Set Variable    ${result2[0]}
+    log    ${Detailline0}
+    ${caplocation2}    Set Variable    ${Detailline0['caplocation']}
+    should not be empty    ${caplocation2}    #断言采集地点不为空
+    ${getmessage2}    Set Variable    ${responsedata2['message']}
+    log    ${result2}    #输出查询结果
+    log    ${getmessage2}    #输出查询message提示
+    ${input21}    Set Variable    plateColor=蓝&startTimeList=2018-01-01 14:55:38&endTimeList=2018-04-28 14:55:48&plate=苏A7U1M5&targetMac=${MAC}&operateType=1&range=60    #查看区域数详情的参数赋值
+    ${data21}    Post Request    api    /gp/plate/plateRelevanceMacDetail    ${input21}    #请求接口
+    log    ${data21.text}
+    ${response21}    Set Variable    ${data21.text}
+    ${responsedata21}    To Json    ${response21}    #返回结果转换为json格式
+    log    ${responsedata21}
+    ${status21}    Set Variable    ${responsedata21['status']}    #取返回结果的status值
+    should be equal as strings    ${status21}    True    #断言status是否为true
+    ${result21}    Set Variable    ${responsedata21['result']}
+    ${Detail1line0}    Set Variable    ${result21[0]}
+    log    ${Detail1line0}
+    ${caparea21}    Set Variable    ${Detail1line0['caparea']}
+    should not be empty    ${caparea21}    #断言采集区域不为空
+    ${getmessage21}    Set Variable    ${responsedata21['message']}
+    log    ${result21}    #输出查询结果
+    log    ${getmessage21}    #输出查询message提示
+    ${input22}    Set Variable    plateColor=蓝&startTimeList=2018-01-01 14:55:38&endTimeList=2018-04-28 14:55:48&plate=苏A7U1M5&targetMac=${MAC}&operateType=2&range=60    #查看地点数详情的参数赋值
+    ${data22}    Post Request    api    /gp/plate/plateRelevanceMacDetail    ${input22}    #请求接口
+    log    ${data22.text}
+    ${response22}    Set Variable    ${data22.text}
+    ${responsedata22}    To Json    ${response22}    #返回结果转换为json格式
+    log    ${responsedata22}
+    ${status22}    Set Variable    ${responsedata22['status']}    #取返回结果的status值
+    should be equal as strings    ${status22}    True    #断言status是否为true
+    ${result22}    Set Variable    ${responsedata22['result']}
+    ${Detail2line0}    Set Variable    ${result22[0]}
+    log    ${Detail2line0}
+    ${caplocation22}    Set Variable    ${Detail2line0['caplocation']}
+    should not be empty    ${caplocation22}    #断言采集地点不为空
+    ${getmessage22}    Set Variable    ${responsedata22['message']}
+    log    ${result22}    #输出查询结果
+    log    ${getmessage22}    #输出查询message提示
+    ${input23}    Set Variable    plateColor=蓝&startTimeList=2018-01-01 14:55:38&endTimeList=2018-04-28 14:55:48&plate=苏A7U1M5&targetMac=${MAC}&operateType=3&range=60    #查看时间匹配度详情的参数赋值
+    ${data23}    Post Request    api    /gp/plate/plateRelevanceMacDetail    ${input23}    #请求接口
+    log    ${data23.text}
+    ${response23}    Set Variable    ${data23.text}
+    ${responsedata23}    To Json    ${response23}    #返回结果转换为json格式
+    log    ${responsedata23}
+    ${status23}    Set Variable    ${responsedata23['status']}    #取返回结果的status值
+    should be equal as strings    ${status23}    True    #断言status是否为true
+    ${result23}    Set Variable    ${responsedata23['result']}
+    ${Detail3line0}    Set Variable    ${result23[0]}
+    log    ${Detail3line0}
+    ${caplocation23}    Set Variable    ${Detail3line0['caplocation']}
+    should not be empty    ${caplocation23}    #断言采集地点不为空
+    ${getmessage23}    Set Variable    ${responsedata23['message']}
+    log    ${result23}    #输出查询结果
+    log    ${getmessage23}    #输出查询message提示
+    #plateRelevanceMacMap    车牌关联MAC轨迹地图接口
+    ${input3}    Set Variable    plateColor=蓝&startTimeList=2018-01-01 14:55:38&endTimeList=2018-04-28 14:55:48&plate=苏A7U1M5&targetMac=${MAC}&range=60    #参数赋值
+    ${data3}    Post Request    api    /gp/plate/plateRelevanceMacMap    ${input3}    #请求接口
+    log    ${data3.text}
+    ${response3}    Set Variable    ${data3.text}
+    ${responsedata3}    To Json    ${response3}    #返回结果转换为json格式
+    log    ${responsedata3}
+    ${status3}    Set Variable    ${responsedata3['status']}    #取返回结果的status值
+    should be equal as strings    ${status3}    True    #断言status是否为true
+    ${result3}    Set Variable    ${responsedata3['result']}
+    ${line30}    Set Variable    ${result3[0]}
+    log    ${line30}
+    ${captimes3}    Set Variable    ${line30['captime']}
+    should not be empty    ${captimes3}    #断言采集次数不为空
+    ${getmessage3}    Set Variable    ${responsedata3['message']}
+    log    ${result3}
+    log    ${getmessage3}    #输出查询message提示
+    #plateRelevanceMacMapDetail    车牌关联MAC轨迹地图详情接口
+    ${input4}    Set Variable    plateColor=蓝&startTimeList=2018-01-01 14:55:38&endTimeList=2018-04-28 14:55:48&plate=苏A7U1M5&targetMac=${MAC}&operateType=1&range=60    #参数赋值
+    ${data4}    Post Request    api    /gp/plate/plateRelevanceMacMapDetail    ${input4}    #请求接口
+    log    ${data4.text}
+    ${response4}    Set Variable    ${data4.text}
+    ${responsedata4}    To Json    ${response4}    #返回结果转换为json格式
+    log    ${responsedata4}
+    ${status4}    Set Variable    ${responsedata4['status']}    #取返回结果的status值
+    should be equal as strings    ${status4}    True    #断言status是否为true
+    ${result4}    Set Variable    ${responsedata4['result']}
+    ${line40}    Set Variable    ${result4[0]}
+    log    ${line40}
+    ${caplocation4}    Set Variable    ${line40['caplocation']}
+    should not be empty    ${caplocation4}    #断言采集地点不为空
+    ${getmessage4}    Set Variable    ${responsedata4['message']}
+    log    ${result4}
+    log    ${getmessage4}    #输出查询message提示

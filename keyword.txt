@@ -1,0 +1,29 @@
+*** Settings ***
+Resource          keyword.txt
+Library           Selenium2Library
+Library           RequestsLibrary
+Library           RequestsLibrary
+Library           requests
+
+*** Keywords ***
+Gettoken
+    [Documentation]    获取token
+    ${header}    Create Dictionary    Content-Type=application/json    charset=UTF-8
+    ${url}    Set Variable    http://10.20.8.234:9897
+    ${session}    Create Session    api    ${url}    ${header}
+    ${params}    Create Dictionary    userName=420621198710305125    password=123456    serverCode=cpip2.0
+    ${u}    Post Request    api    /sso/jwt/login    data=${params}
+    log    ${u}
+    ${response}    Set Variable    ${u.text}
+    log    ${response}
+    ${b}    To Json    ${response}
+    ${c}    Set Variable    ${b['result']}
+    ${d}    Set Variable    ${c['token']}
+    log    ${d}
+    [Return]    ${d}    # token
+
+URL
+    [Documentation]    获取token
+    ${d}    Set Variable    http://10.20.8.234:9897
+    log    ${d}
+    [Return]    ${d}    # URL
